@@ -3,26 +3,27 @@ int oct[3][12] = {
     {262,277,294,311,330,349,370,392,415,440,466,494},
     {523,554,587,622,659,698,740,784,831,880,932,988}
 };
-byte low, high;
+byte low, high, onoff;
 #define sori 3
 void setup() {
-  pinMode(4,OUTPUT);
-  pinMode(5,INPUT);
+  pinMode(6,OUTPUT); //녹음
+  pinMode(7,OUTPUT); //재생
   pinMode(sori,OUTPUT);
-  pinMode(12,OUTPUT);
-  Serial.begin(9600);
+  //Serial.begin(9600);
 }
 
 void loop() {
- int btn=analogRead(A2);
- eum=getbutton(btn);
- println(eum);
- dong(eum)
+ int btn=analogRead(A3);
+ int eum=getbutton(btn);
+ //Serial.println(eum);
+ dong(eum);
+ 
+ //**************************************************
  delay(1000);
  } 
 
-int getbutton(int val) {
- if(val>1000)eum=0;
+ int getbutton(int val) {
+ if(val>1000)return 0;
  else if(val>900)return 1;
  else if(val>820)return 2;
  else if(val>750)return 3;
@@ -38,30 +39,25 @@ int getbutton(int val) {
  else if(val>300)return 13;
  else if(val>260)return 14;
  else if(val>200)return 15;
- else return 123123; 
+ else return 16; 
 }
-void dong(eum) {
+
+int dong(int eum) {
   if(eum<12)
     tone(sori,oct[1+high-low][eum],500);
   else if(eum==12) low=low^1;
   else if(eum==13) high=high^1;
-  else if(eum==14) rec();
-  else if(eum==15) playe();
+  else if(eum==14) {
+    delay(3000);
+    tone(sori,622,500);
+    digitalWrite(6,1);
+    digitalWrite(6,0);
+  }
+  else if(eum==15) {
+    onoff=onoff^1;
+    digitalWrite(7,onoff);
+  }
   if(high==1&&low==1) {
   high=0; low=0;
  }
-}
-
-
-void rec() {
-  digitalWrite(5,HIGH);                 // 녹음 중....
-  delay(10000);                           // 10초 동안 녹음 중 
-  digitalWrite(5,LOW);
-  Serial.println("끝");
-}
-
-void playe() {
-  digitalWrite(4,HIGH);               // 재생 중.
-  delay(10000);
-  digitalWrite(4,LOW);
 }
